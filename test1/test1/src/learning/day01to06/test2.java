@@ -1,4 +1,4 @@
-package learning.test;
+package learning.day01to06;
 
 public class test2 {
     private int age;

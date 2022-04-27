@@ -1,4 +1,4 @@
-package learning;
+package learning.day01to06;
 
 public class Student {
 

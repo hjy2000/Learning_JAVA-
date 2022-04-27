@@ -1,4 +1,4 @@
-package learning;
+package learning.day01to06;
 
 class ppp{
     String name; //类成员变量可以不初始化
