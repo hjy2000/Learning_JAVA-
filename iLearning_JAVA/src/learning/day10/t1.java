@@ -44,7 +44,6 @@ class A {
             super(e);
         }
     }
-
     public class t1 {
         public static void main(String[] args) {//main方法也可以抛出异常 但是直接抛给了虚拟机.....
             try {
