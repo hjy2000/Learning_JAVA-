@@ -1,6 +1,7 @@
 package learning.day07;
 //Object类主要方法有public Object()构造器 public boolean equals()方法比较引用类型
 // public int hashcode()获取hash码 public String toString()方法供对象打印调用
+//
 public class test2 {
     public void t(Object obj)//确定形参是类但是不知道什么类 可以使用根父类 接受子类对象
     {
