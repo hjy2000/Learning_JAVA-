@@ -1,116 +1,113 @@
 package learning.day11;
-//final实例变量必须显示地被赋初始值，而且本质上final实例变量只能在构造器中被赋初始值
+// final实例变量必须显示地被赋初始值，而且本质上final实例变量只能在构造器中被赋初始值
 import java.lang.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-class D
+enum Season implements It // 枚举类也可以实现接口
 {
-    @TestAnn(id = 1,desc = "name")//这里不写的话就是default的值 写了就是传进去的
-    String ann;
-    public void test(List<?> l)//泛型通配符
-    {}
-    public void test1(List<? extends A2> l)//通配符限制为A2及其子类
-    {}
-    public void test2(List<? super A1> l)//通配符限制为A1及其父类
-    {}
-    public void test3(List<? extends I123> l)//通配符限制为I123的实现类
-    {}
+  SPRING("春天", "s"),
+  SUMMER("夏天", "ss"),
+  FALL("秋天", "f"),
+  WINTER("冬天", "w"); // 相当于调用构造方法
+
+  private final String name;
+  private final String desc;
+
+  private Season(String name, String desc) // 私有构造器
+      {
+    this.desc = desc;
+    this.name = name;
+  }
+
+  @Deprecated // 过时方法 仍可调用但是会看到是过时的
+  public void show() {
+    System.out.println(this.name + this.desc);
+  }
+
+  @Override
+  public void test() {
+    System.out.println("枚举类实现及接口方法");
+  }
 }
 
-class A1
-{
+interface I123 {}
 
-}
-class A2 extends A1
-{
-
+interface It {
+  void test();
 }
 
-class A3 extends A2
-{
-
-}
-interface I123
-{ }
-class II implements I123
-{ }
-
-interface It
-{
-    void test();
-}
-enum Season implements It//枚举类也可以实现接口
-{
-    SPRING("春天","s"),
-    SUMMER("夏天","ss"),
-    FALL("秋天","f"),
-    WINTER("冬天","w");//相当于调用构造方法
-
-    private final String name;
-    private final String desc;
-
-    private Season(String name,String desc)//私有构造器
-    {
-        this.desc=desc;
-        this.name=name;
-    }
-    @Deprecated//过时方法 仍可调用但是会看到是过时的
-    public void show()
-    {
-        System.out.println(this.name+this.desc);
-    }
-
-    @Override
-    public void test() {
-        System.out.println("枚举类实现及接口方法");
-    }
-}
-public class t2 {
-    @SuppressWarnings({})
-    public static void main(String[] args) {
-        D d=new D();
-        List<String> ll=new ArrayList<String>();
-        d.test(ll);
-
-        List<A1> ll1=new ArrayList<A1>();
-        List<A3> ll2=new ArrayList<A3>();
-        d.test1(ll2);//可以
-//        d.test1(ll1);//报错 通配符限制为A2及其子类 A1是父类
-
-        d.test2(ll1);//可以
-//        d.test2(ll2);//报错 限制为A1及其父类了
-        List<II> ll3=new ArrayList<II>();
-        d.test3(ll3);//合法
-//        d.test3(ll1);//非法 ll1不是I123的是实现类
-
-        Season s=Season.SPRING;//返回春天对象
-        s.show();//还是可以用的.. 只不过emm
-        s.test();
-        Season s1=Season.SPRING;//返回春天对象
-        s1.show();
-
-        System.out.println(s.equals(s1));//true 说明枚举类中同一个枚举都是返回同一个对象 即单例模式
-        //这里这个equals是用==实现的 与==相同
-        //枚举类实现了comparable接口 compareTo方法可以比较枚举常量对象的大小 即比较声明的前后顺序
-        @SuppressWarnings({"警告测试","unused","spillingerror"})
-        List<II> lllllll=new ArrayList();//比如无泛型限制会有警告 上面加@SuppressWarnings可以抑制编译器警告
-    }
-}
-
-@Target(ElementType.FIELD)//表示这个注解类是为了注解类属性的
-@Retention(RetentionPolicy.RUNTIME)//表示注解的生命周期为程序运行时
+@Target(ElementType.FIELD) // 表示这个注解类是为了注解类属性的
+@Retention(RetentionPolicy.RUNTIME) // 表示注解的生命周期为程序运行时
 @Documented
-@interface TestAnn//注解类
+@interface TestAnn // 注解类
 {
-    public int id() default 0;
-    public String desc() default "";
+  public int id() default 0;
+
+  public String desc() default "";
 }
-//注解：详细见文章https://zhuanlan.zhihu.com/p/37701743
-//@Override 重写方法
-//@Deprecated 过时方法 仍可调用但是会看到是过时的
-//@SuppressWarnings 可以去除警告
-//可以自定义注解
+
+class D {
+  @TestAnn(id = 1, desc = "name") // 这里不写的话就是default的值 写了就是传进去的
+  String ann;
+
+  public void test(List<?> l) // 泛型通配符
+      {}
+
+  public void test1(List<? extends A2> l) // 通配符限制为A2及其子类
+      {}
+
+  public void test2(List<? super A1> l) // 通配符限制为A1及其父类
+      {}
+
+  public void test3(List<? extends I123> l) // 通配符限制为I123的实现类
+      {}
+}
+
+class A1 {}
+
+class A2 extends A1 {}
+
+class A3 extends A2 {}
+
+class II implements I123 {}
+
+public class t2 {
+  @SuppressWarnings({})
+  public static void main(String[] args) {
+    D d = new D();
+    List<String> ll = new ArrayList<String>();
+    d.test(ll);
+
+    List<A1> ll1 = new ArrayList<A1>();
+    List<A3> ll2 = new ArrayList<A3>();
+    d.test1(ll2); // 可以
+    //        d.test1(ll1);//报错 通配符限制为A2及其子类 A1是父类
+
+    d.test2(ll1); // 可以
+    //        d.test2(ll2);//报错 限制为A1及其父类了
+    List<II> ll3 = new ArrayList<II>();
+    d.test3(ll3); // 合法
+    //        d.test3(ll1);//非法 ll1不是I123的是实现类
+
+    Season s = Season.SPRING; // 返回春天对象
+    s.show(); // 还是可以用的.. 只不过emm
+    s.test();
+    Season s1 = Season.SPRING; // 返回春天对象
+    s1.show();
+
+    System.out.println(s.equals(s1)); // true 说明枚举类中同一个枚举都是返回同一个对象 即单例模式
+    // 这里这个equals是用==实现的 与==相同
+    // 枚举类实现了comparable接口 compareTo方法可以比较枚举常量对象的大小 即比较声明的前后顺序
+    @SuppressWarnings({"警告测试", "unused", "spillingerror"})
+    List<II> lllllll = new ArrayList(); // 比如无泛型限制会有警告 上面加@SuppressWarnings可以抑制编译器警告
+  }
+}
+// 注解：详细见文章https://zhuanlan.zhihu.com/p/37701743
+// @Override 重写方法
+// @Deprecated 过时方法 仍可调用但是会看到是过时的
+// @SuppressWarnings 可以去除警告
+// 可以自定义注解
 /*
 (01) @interface
 
