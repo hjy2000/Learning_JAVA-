@@ -4,6 +4,8 @@ package learning.day12to13;
 // 文件字节流其实非常通用 大部分文件都可以转换为二进制再操作
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 class File1 {
   public void test() {
@@ -241,18 +243,162 @@ class File1 {
     // UTF-8为汉字常用编码，操作字符文件时，字节流转换为字符流操作更高效
     try {
       FileInputStream fs = new FileInputStream(inPath);
-
+      // 字节流转换为字符流
+      InputStreamReader isr = new InputStreamReader(fs, StandardCharsets.UTF_8);
+      char[] c = new char[20];
+      int len;
+      while ((len = isr.read(c)) != -1) {
+        System.out.println(new String(c, 0, len));
+      }
+      isr.close();
+      fs.close();
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     }
   }
+
+  /** 标准输入输出流 输入是键盘 输出到显示器 */
+  public void stdin() throws IOException {
+    // 创建接收键盘输入的字符输入流
+    InputStreamReader in = new InputStreamReader(System.in);
+    // 将输入流放入缓冲流
+    BufferedReader bf = new BufferedReader(in);
+    String s = "";
+    while ((s = bf.readLine()) != null) {
+      System.out.println(s);
+    }
+    bf.close();
+    in.close();
+  }
+
+  /**
+   * @throws IOException 标准输出流
+   */
+  public void stdout(String outPath) throws IOException {
+    // 创建接收键盘输入的字符输入流
+    InputStreamReader in = new InputStreamReader(System.in);
+    // 将输入流放入缓冲流
+    BufferedReader bf = new BufferedReader(in);
+    FileOutputStream f2 = new FileOutputStream(outPath);
+    //    OutputStreamWriter out=new OutputStreamWriter(System.out);
+    String s = "";
+    while ((s = bf.readLine()) != null) {
+      if (s.equals("over")) {
+        break;
+      }
+      System.out.println(s);
+      f2.write(s.getBytes());
+    }
+    bf.close();
+    in.close();
+  }
+
+  public void ioTest() {
+    System.out.println("请输入：");
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    String str = null;
+    try {
+      str = br.readLine();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    System.out.println(str);
+
+    System.out.println("请输入：");
+    Scanner sc = new Scanner(System.in);
+    String name = sc.next(); // next()读取String类型的值
+    int age = sc.nextInt(); // nextInt()读取int类型的值
+    double weight = sc.nextDouble(); // nextDouble()读取double类型的值
+    System.out.println("姓名：" + name + ", 年龄：" + age + ", 体重：" + weight);
+  }
+
+  // 数据输出流 DataInputStream（输出基本数据类型）输出到文件是乱码的你看不到 但是用数据输入流读取其实是可以的
+  // 写的时候writedouble 读取的时候就要readdouble 数据类型要对应 了解即可
+
+  public void objIn(String inPath) {
+    // 将对象流反序列化 然后访问对象
+    try {
+      ObjectInputStream in = new ObjectInputStream(new FileInputStream(inPath));
+      Object obj = in.readObject(); // 读取对象向上转型
+      p p1 = (p) obj; // 向下转型
+      System.out.println(p1.age);
+    } catch (IOException | ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void objOut(String outPath) {
+    try {
+      // 定义一个对象 将它序列化后放入文件中
+      p p1 = new p();
+      p1.age = 16;
+      p1.name = "hjyy";
+      ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outPath));
+      out.writeObject(p1);
+      out.flush();
+      out.close();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /** 文件随机读写类 RandomFileAccess类 构造器可以接收File对象或者String（文件名）对象 */
+  public void randomFileIn(String inPath) {
+    // 随机读
+    try {
+      //第一个参数是文件路径 第二个参数是工作模式 常见的有r，rw，rwd，rws
+      //r:只读 rw:读写 rwd:读写并同步文件内容 rws:读写并同步文件内容和元数据
+      RandomAccessFile r=new RandomAccessFile(inPath,"r");
+      //设置文件读取起始位置 注意 换行符是两个字节
+      r.seek(3);
+      byte []b=new byte[1024];
+      int len;
+      while((len=r.read(b))!=-1)
+      {
+        System.out.println(new String(b,0,len));
+      }
+      r.close();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void randomFileOut(String outPath) {
+    // 随机写
+    try {
+      RandomAccessFile r=new RandomAccessFile(outPath,"rw");
+      String s=new Scanner(System.in).next();
+      r.seek(0);//如果是从文件中间写 就会覆盖等长的内容
+      r.seek(r.length());//这样就是追加 文件末尾写
+      r.write(s.getBytes());
+      r.close();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
 }
 
+class p implements Serializable {
+  /**
+   * 无论是将对象保存到硬盘上还是网络通信传输 都需要将对象转换为二进制流 对象持久化 对象序列化 写（OUTPUT） 而接受信息读取对象需要将二进制流转换为对象才能继续使用 对象反序列化
+   * 读（INPUT） 序列化与反序列化只能对对象进行 static修饰的类属性 transient修饰的不能用
+   * 不希望在网络操作（主要涉及到序列化操作，本地序列化缓存也适用）中被传输，这些信息对应的变量就可以加上transient关键字。换句话说，这个字段的生命周期仅存于调用者的内存中而不会写到磁盘里持久化。
+   * transient关键字为我们提供了便利，你只需要实现Serilizable接口，将不需要序列化的属性前添加关键字transient，序列化对象的时候，这个属性就不会序列化到指定的目的地中。
+   * 要实现某个类的对象可序列化，需要实现Serilizable或者Externalizable接口之一 序列化与反序列化使用的类的包名 类名 类结构都要一致 即使是结构一样 public情况下
+   * 不同包也是不行的
+   */
+  private static final long SERILIZABLE_VERSIONUID = 1L;
+
+  String name;
+  int age;
+}
 /**
  * @author 奥利弗
  */
 public class IO {
   public static void main(String[] args) {
+    String inPath1 = "G:\\Java projects\\iLearning_JAVA\\src\\learning\\day12to13\\t.txt";
     String inPath = "G:\\Java projects\\iLearning_JAVA\\src\\learning\\day12to13\\t123.txt";
     String outPath = "G:\\Java projects\\iLearning_JAVA\\src\\learning\\day12to13\\t123_copy.txt";
     File1 ff = new File1();
@@ -268,7 +414,14 @@ public class IO {
       //        ff.fCharCopy(inPath,outPath);
       //            ff.bOutputStream(outPath);
       //            ff.bCopyStream(inPath,outPath);
-      ff.testInputStreamReader(inPath, outPath);
+      //      ff.testInputStreamReader(inPath1, outPath);
+      //      ff.stdin();
+      //      ff.stdout(outPath);
+      //      ff.ioTest();
+      //      ff.objOut(outPath);
+//      ff.objIn(outPath);
+//      ff.randomFileIn(inPath);
+      ff.randomFileOut(outPath);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
