@@ -1,4 +1,4 @@
-package app;
+package learning.day01to06;
 
 public class App {
   public static void main(String[] args) throws Exception {
