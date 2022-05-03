@@ -1,4 +1,5 @@
 package learning.day09;
+
 interface I1 // 接口
  {
   int i1 = 0; // 一定要初始化 因为接口的变量默认为 public static final定义 即默认就是常量

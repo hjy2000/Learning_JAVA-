@@ -17,6 +17,7 @@ abstract class e {
   int salary;
   String name;
   int id;
+
   e() {}
 
   public abstract void work();

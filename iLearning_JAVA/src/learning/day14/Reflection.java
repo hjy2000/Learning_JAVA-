@@ -7,6 +7,7 @@ package learning.day14;
 import java.lang.reflect.*;
 
 interface I1 {
+
   public void t1();
 }
 
@@ -29,16 +30,20 @@ class I implements I1, I2 {
 
 class proxy implements InvocationHandler {
   // 需求：在方法执行前打印方法开始执行 执行完毕后打印执行完毕  且其中方法名需要对应
-  Object obj;//被代理的对象
-  public proxy(Object o)
-  {
-    this.obj=o;//传值
+  Object obj; // 被代理的对象 一个对象要被代理 那就要有实现的接口和实现类？？
+
+  public proxy(Object o) {
+    this.obj = o; // 传值
   }
+
   public void out() {}
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    return null;
+    System.out.println(method.getName() + "开始执行");
+    Object rs = method.invoke(this.obj, args);
+    System.out.println(method.getName() + "执行完毕");
+    return rs;
   }
 }
 
@@ -259,7 +264,25 @@ class All {
 
   public void dynamicProxy() {
     // 动态代理
-
+    // 当代理对象调用真实对象的方法时，其会自动的跳转到代理对象关联的handler对象的invoke方法来进行调用。
+    I ii = new I();
+    ii.t1();
+    ii.t2();
+    System.out.println("------------------");
+    InvocationHandler handler = new proxy(ii);
+    // 第一个参数 类加载器 第二个参数 被代理对象的接口 第三个参数 被代理对象
+    // 返回值是被代理后的对象 Object类型 要转换一下
+    I1 iii =
+        (I1)
+            Proxy.newProxyInstance(
+                handler.getClass().getClassLoader(), ii.getClass().getInterfaces(), handler);
+    iii.t1(); // 这里使用接口来接受对象的... why? 一个对象要被代理 那就要有实现的接口和实现类
+    System.out.println("------------------");
+    I2 iiii =
+        (I2)
+            Proxy.newProxyInstance(
+                handler.getClass().getClassLoader(), ii.getClass().getInterfaces(), handler);
+    iiii.t2();
   }
 }
 
@@ -267,6 +290,6 @@ public class Reflection {
   public static void main(String[] args)
       throws InvocationTargetException, InstantiationException, IllegalAccessException {
     All a = new All();
-    a.invoke();
+    a.dynamicProxy();
   }
 }

@@ -92,7 +92,7 @@ public class test1 {
     System.out.println(
         "abc"
             == "abc"); // true 这里直接“abc”是true 因为这里的abc是直接存在字符串常量池中的 第一次创建好abc以后 第二次发现有abc存在直接把地址给过去了
-                       // 所以==比较也是true
+    // 所以==比较也是true
     // 但是在String、file、date对象中 重写了equals方法 导致使用equals比较这些对象时只比较内容不比较地址
     // 如果使用String s="abc"; 则这样首先在常量池中找有没有 没有就创建 有的话直接赋值地址 后面再有这样的赋值的话 直接赋值地址过去 不再创建新的字符串
     // 但是 如果使用String s=new String("abc");的话 是在常量池中寻找abc 没有的话在池子里添加abc 然后在堆中创建一个abc字符串对象 将地址赋给s

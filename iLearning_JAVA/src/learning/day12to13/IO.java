@@ -346,16 +346,15 @@ class File1 {
   public void randomFileIn(String inPath) {
     // 随机读
     try {
-      //第一个参数是文件路径 第二个参数是工作模式 常见的有r，rw，rwd，rws
-      //r:只读 rw:读写 rwd:读写并同步文件内容 rws:读写并同步文件内容和元数据
-      RandomAccessFile r=new RandomAccessFile(inPath,"r");
-      //设置文件读取起始位置 注意 换行符是两个字节
+      // 第一个参数是文件路径 第二个参数是工作模式 常见的有r，rw，rwd，rws
+      // r:只读 rw:读写 rwd:读写并同步文件内容 rws:读写并同步文件内容和元数据
+      RandomAccessFile r = new RandomAccessFile(inPath, "r");
+      // 设置文件读取起始位置 注意 换行符是两个字节
       r.seek(3);
-      byte []b=new byte[1024];
+      byte[] b = new byte[1024];
       int len;
-      while((len=r.read(b))!=-1)
-      {
-        System.out.println(new String(b,0,len));
+      while ((len = r.read(b)) != -1) {
+        System.out.println(new String(b, 0, len));
       }
       r.close();
     } catch (IOException e) {
@@ -366,16 +365,15 @@ class File1 {
   public void randomFileOut(String outPath) {
     // 随机写
     try {
-      RandomAccessFile r=new RandomAccessFile(outPath,"rw");
-      String s=new Scanner(System.in).next();
-      r.seek(0);//如果是从文件中间写 就会覆盖等长的内容
-      r.seek(r.length());//这样就是追加 文件末尾写
+      RandomAccessFile r = new RandomAccessFile(outPath, "rw");
+      String s = new Scanner(System.in).next();
+      r.seek(0); // 如果是从文件中间写 就会覆盖等长的内容
+      r.seek(r.length()); // 这样就是追加 文件末尾写
       r.write(s.getBytes());
       r.close();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-
   }
 }
 
@@ -419,8 +417,8 @@ public class IO {
       //      ff.stdout(outPath);
       //      ff.ioTest();
       //      ff.objOut(outPath);
-//      ff.objIn(outPath);
-//      ff.randomFileIn(inPath);
+      //      ff.objIn(outPath);
+      //      ff.randomFileIn(inPath);
       ff.randomFileOut(outPath);
     } catch (Exception e) {
       throw new RuntimeException(e);
